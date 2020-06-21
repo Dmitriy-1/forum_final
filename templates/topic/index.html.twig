@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+{% block title %}Топики{% endblock %}
+{% block body %}
+    <div class="topic__form">
+    <ul type="none" class="topic_list">
+        {% for topic in topics %}
+            <li class="topic">
+                <div class="topic__block">
+                    <p class="topic__title"><a href="{{ path('topic_show', {'id': topic.id}) }}">{{ topic.titleTopic }}</a></p>
+                    <p class="topic__date">{{ topic.dateCreateTopic ?  topic.dateCreateTopic|date('Y-m-d H:i') : '' }}</p>
+                    <p class="topic__comment"> Комментариев: {{ topic.getComments().count() }}</p>
+                </div>
+
+            </li>
+        {% else %}
+            <li>
+                Нет топиков.
+            </li>
+        {% endfor %}
+    </ul>
+    </div>
+{% endblock %}

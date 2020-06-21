@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{#{% block title %}{{ topic.titleTopic }}{% endblock %}#}
+{% block body %}
+    <div class="container__topic">
+        <div >
+            <a class="button_top" href="{{ path('topic_index') }}">Назад к списку</a>
+            <h1 >{{ topic.titleTopic }}</h1>
+            <p class="topic__date" >{{ topic.dateCreateTopic ?  topic.dateCreateTopic|date('Y-m-d H:i') : '' }}</p>
+            <p class="topic__date" >Категория: {{ topic.getSectionTopic()}}</p>
+            <p>Автор: {{ topic.getUserTopic().getUsername()}}</p>
+            <p >{{ topic.getTextTopic }}</p>
+
+        </div>
+        <div class="comment__block">
+            <h2 >Комментарии</h2>
+            {% if app.user != null %}
+                {{ include('comments/_form.html.twig') }}
+            {% endif %}
+            <ul type="none">
+                {% for comment in topic.comments %}
+                    <li class="comment">
+                        <div>
+                            <p >{{ comment.getUserComment().getUsername() }}</p>
+                                <p >{{ comment.getDateComment() ? comment.getDateComment()|date('Y-m-d H:i') : '' }}</p>
+                           <p>{{ comment.getTextComment()}}</p>
+                        </div>
+                    </li>
+                {% else %}
+                    <li class="comment">
+                        <p >На данный момент у этого топика нет комментариев.</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+

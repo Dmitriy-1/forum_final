@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -45,6 +47,22 @@ class User implements UserInterface
 
 
     private $PlainPassword;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Topic::class, mappedBy="user_topic", orphanRemoval=true)
+     */
+    private $topics;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Comments::class, mappedBy="user_comment", orphanRemoval=true)
+     */
+    private $comments;
+
+    public function __construct()
+    {
+        $this->topics = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -146,5 +164,72 @@ class User implements UserInterface
     public function setPlainPassword($password)
     {
         $this->PlainPassword = $password;
+    }
+
+    /**
+     * @return Collection|Topic[]
+     */
+    public function getTopics(): Collection
+    {
+        return $this->topics;
+    }
+
+    public function addTopic(Topic $topic): self
+    {
+        if (!$this->topics->contains($topic)) {
+            $this->topics[] = $topic;
+            $topic->setUserTopic($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTopic(Topic $topic): self
+    {
+        if ($this->topics->contains($topic)) {
+            $this->topics->removeElement($topic);
+            // set the owning side to null (unless already changed)
+            if ($topic->getUserTopic() === $this) {
+                $topic->setUserTopic(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Comments[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comments $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setUserComment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comments $comment): self
+    {
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
+            // set the owning side to null (unless already changed)
+            if ($comment->getUserComment() === $this) {
+                $comment->setUserComment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return strval($this->NameUser);
     }
 }
